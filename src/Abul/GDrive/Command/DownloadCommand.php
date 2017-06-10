@@ -20,7 +20,7 @@ class DownloadCommand extends Command
         $this->setDescription('Download files from google drive.');
         $this->setDefinition(new InputDefinition([
             new InputArgument('fileId', InputArgument::OPTIONAL, "ID of the file to be downloaded"),
-            new InputOption('query', null, InputOption::VALUE_REQUIRED, "Download file that mmatches the given guery")
+            new InputOption('query', null, InputOption::VALUE_REQUIRED, "Download file that mmatches the given query")
         ]));
     }
 
