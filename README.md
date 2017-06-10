@@ -1,3 +1,3 @@
-[![Build Status](https://travis-ci.org/abulwcse/gdrive.svg?branch=master)](https://travis-ci.org/abulwcse/gdrive) [![Coverage Status](https://coveralls.io/repos/github/abulwcse/gdrive/badge.svg?branch=master)](https://coveralls.io/github/abulwcse/gdrive?branch=master)
+[![Build Status](https://travis-ci.org/abulwcse/gdrive.svg?branch=master)](https://travis-ci.org/abulwcse/gdrive) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/abulwcse/gdrive/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/abulwcse/gdrive/?branch=master)
 # gdrive
 A console applicate for managing google drive files
