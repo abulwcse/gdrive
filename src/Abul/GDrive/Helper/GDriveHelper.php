@@ -101,6 +101,16 @@ class GDriveHelper
         return $this->_client;
     }
 
+    public function downloadFileDetail($fileId)
+    {
+        $file = $this->getFileDetail($fileId);
+        $content = $this->_service->files->get($fileId, ["alt" => "media"]);
+        $outHandle = fopen($file->getName(), "w+");
+        while (!$content->getBody()->eof()) {
+            fwrite($outHandle, $content->getBody()->read(1024));
+        }
+        fclose($outHandle);
+    }
 
     public function getFileDetail($fileId)
     {
@@ -109,12 +119,11 @@ class GDriveHelper
         ]);
     }
 
-
     /**
      * @param $query
      * @return \Google_Service_Drive_FileList
      */
-    public function getAllFiles($query, $orderBy)
+    public function getAllFiles($query, $orderBy = null)
     {
         $searchParms['q'] = $query;
         if (!empty($orderBy)) {
