@@ -42,5 +42,4 @@ class UploadCommand extends Command
             $output->writeln($e->getMessage());
         }
     }
-
 }

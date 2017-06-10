@@ -66,5 +66,4 @@ class AboutCommand extends Command
             $output->writeln($e->getMessage());
         }
     }
-
 }
