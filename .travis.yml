@@ -16,6 +16,7 @@ before_install:
 install:
   - if [[ "$TRAVIS_PHP_VERSION" == "5.4" ]]; then composer remove --dev cache/filesystem-adapter; fi
   - $(echo $COMPOSER_CMD)
+  - travis_retry composer install --no-interaction
 
 before_script:
   - phpenv version-name | grep ^5.[34] && echo "extension=apc.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini ; true
