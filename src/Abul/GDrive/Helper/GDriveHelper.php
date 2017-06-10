@@ -14,6 +14,11 @@ class GDriveHelper
     private $_client;
 
     /**
+     * @var Google_Service_Drive
+     */
+    private $_service;
+
+    /**
      * @var ConfigurationHelper
      */
     private $_configHelper;
@@ -35,6 +40,19 @@ class GDriveHelper
         }
     }
 
+    /**
+     *
+     */
+    public function initService()
+    {
+        $this->loadAppConfig();
+        $this->loadAccessConfig();
+        if ($this->_client->isAccessTokenExpired()) {
+            $config = $this->_client->fetchAccessTokenWithRefreshToken();
+            $this->_configHelper->writeConfig(ConfigurationHelper::ACCESS_CONFIG_FILE, $config);
+        }
+        $this->_service = new Google_Service_Drive($this->_client);
+    }
 
     /**
      * @throws ConfigurationMissingException
@@ -61,32 +79,17 @@ class GDriveHelper
     }
 
     /**
-     *
-     */
-    public function initService()
-    {
-        $this->loadAppConfig();
-        $this->loadAccessConfig();
-        if($this->_client->isAccessTokenExpired()) {
-            $config = $this->_client->fetchAccessTokenWithRefreshToken();
-            $this->_configHelper->writeConfig(ConfigurationHelper::ACCESS_CONFIG_FILE, $config);
-        }
-    }
-
-
-    /**
      * @return array
      */
     public function getAbout()
     {
-        $service = new Google_Service_Drive($this->_client);
-        $about = $service->about->get(['fields' => 'user,storageQuota']);
+        $about = $this->_service->about->get(['fields' => 'user,storageQuota']);
         return [
             'Name' => $about->getUser()->getDisplayName(),
             'Email' => $about->getUser()->getEmailAddress(),
-            'Used drive space' => $this->humanReadableFileSize($about->getStorageQuota()->getUsageInDrive()),
-            'Used trash space' => $this->humanReadableFileSize($about->getStorageQuota()->getUsageInDriveTrash()),
-            'Total space' => $this->humanReadableFileSize($about->getStorageQuota()->getLimit()),
+            'Used drive space' => StringHelper::humanReadableFileSize($about->getStorageQuota()->getUsageInDrive()),
+            'Used trash space' => StringHelper::humanReadableFileSize($about->getStorageQuota()->getUsageInDriveTrash()),
+            'Total space' => StringHelper::humanReadableFileSize($about->getStorageQuota()->getLimit()),
         ];
     }
 
@@ -99,25 +102,24 @@ class GDriveHelper
     }
 
 
+    public function getFileDetail($fileId)
+    {
+        return $this->_service->files->get($fileId, [
+            'fields' => '*'
+        ]);
+    }
+
+
     /**
      * @param $query
      * @return \Google_Service_Drive_FileList
      */
-    public function getAllFiles($query)
+    public function getAllFiles($query, $orderBy)
     {
-        $service = new Google_Service_Drive($this->_client);
-        return $service->files->listFiles(['q' => $query]);
-    }
-
-    /**
-     * @param $bytes
-     * @param int $decimals
-     * @return string
-     */
-    private function humanReadableFileSize($bytes, $decimals = 2)
-    {
-        $size = array('B','kB','MB','GB','TB','PB','EB','ZB','YB');
-        $factor = floor((strlen($bytes) - 1) / 3);
-        return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$size[$factor];
+        $searchParms['q'] = $query;
+        if (!empty($orderBy)) {
+            $searchParms['orderBy'] = $orderBy;
+        }
+        return $this->_service->files->listFiles($searchParms);
     }
 }
