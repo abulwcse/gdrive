@@ -5,6 +5,7 @@ namespace Abul\GDrive\Helper;
 use Abul\GDrive\Exception\ConfigurationMissingException;
 use Google_Client;
 use Google_Service_Drive;
+use Google_Service_Drive_DriveFile;
 
 class GDriveHelper
 {
@@ -41,7 +42,7 @@ class GDriveHelper
     }
 
     /**
-     *
+     * Init the google drive service
      */
     public function initService()
     {
@@ -55,6 +56,8 @@ class GDriveHelper
     }
 
     /**
+     * Load Application config
+     *
      * @throws ConfigurationMissingException
      */
     public function loadAppConfig()
@@ -68,6 +71,8 @@ class GDriveHelper
     }
 
     /**
+     * Load Access config
+     *
      * @throws ConfigurationMissingException
      */
     public function loadAccessConfig()
@@ -79,6 +84,8 @@ class GDriveHelper
     }
 
     /**
+     * Get Basic details about the drive and user logged in
+     *
      * @return array
      */
     public function getAbout()
@@ -101,6 +108,31 @@ class GDriveHelper
         return $this->_client;
     }
 
+    /**
+     * Upload a file
+     *
+     * @param string $file
+     * @return Google_Service_Drive_DriveFile
+     */
+    public function uploadFile($file)
+    {
+        $diveFile = new Google_Service_Drive_DriveFile();
+        $diveFile->setName(basename($file));
+        $diveFile->setMimeType(mime_content_type($file));
+        $data = file_get_contents($file);
+        $createdFile = $this->_service->files->create($diveFile, array(
+            'data' => $data,
+            'mimeType' => $diveFile->getMimeType(),
+            'uploadType' => 'multipart'
+        ));
+        return $createdFile;
+    }
+
+    /**
+     * Download a file to current directory
+     *
+     * @param $fileId
+     */
     public function downloadFileDetail($fileId)
     {
         $file = $this->getFileDetail($fileId);
@@ -112,6 +144,12 @@ class GDriveHelper
         fclose($outHandle);
     }
 
+    /**
+     * Get details about a file from google drive
+     *
+     * @param string $fileId
+     * @return Google_Service_Drive_DriveFile
+     */
     public function getFileDetail($fileId)
     {
         return $this->_service->files->get($fileId, [
@@ -120,6 +158,8 @@ class GDriveHelper
     }
 
     /**
+     * Search for a file in google drive based on the query
+     *
      * @param $query
      * @return \Google_Service_Drive_FileList
      */

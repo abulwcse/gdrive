@@ -7,10 +7,12 @@ require_once __DIR__ . '/../vendor/autoload.php';
 use Abul\GDrive\Command\AboutCommand;
 use Abul\GDrive\Command\DownloadCommand;
 use Abul\GDrive\Command\ListCommand;
+use Abul\GDrive\Command\UploadCommand;
 use Symfony\Component\Console\Application;
 
 $app = new Application();
 $app->add(new AboutCommand());
 $app->add(new ListCommand());
 $app->add(new DownloadCommand());
+$app->add(new UploadCommand());
 $app->run();
