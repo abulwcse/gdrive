@@ -66,7 +66,7 @@ class ListCommandTest extends \PHPUnit_Framework_TestCase
         $application->add($command);
 
         $command = $application->find('search');
-        $commandTester->execute(['command' => $command->getName(), '--query' => 'quer'],['query' => 'query']);
+        $commandTester->execute(['command' => $command->getName(), '--query' => 'quer']);
         $this->assertEquals("No matching file/folder found.".PHP_EOL,$commandTester->getDisplay());
     }
 
@@ -97,7 +97,7 @@ class ListCommandTest extends \PHPUnit_Framework_TestCase
         $application->add($command);
 
         $command = $application->find('search');
-        $commandTester->execute(['command' => $command->getName(), '--query' => 'quer'],['query' => 'query']);
+        $commandTester->execute(['command' => $command->getName(), '--query' => 'quer']);
         $this->assertNotEquals("No matching file/folder found.".PHP_EOL,$commandTester->getDisplay());
     }
 }
