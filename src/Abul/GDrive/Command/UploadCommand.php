@@ -37,7 +37,7 @@ class UploadCommand extends Command
     {
         try {
             $file = $input->getArgument('file');
-            $file = $this->uploadFile($file);
+            $this->uploadFile($file);
             $output->writeln("File upload successful.");
         } catch (FileNotFoundException $e) {
             $output->writeln($e->getMessage());
