@@ -58,7 +58,7 @@ class ListCommandTest extends \PHPUnit_Framework_TestCase
             ->getMock();
 
         $command->expects($this->any())
-            ->method('getGoogleDriveHelper')
+            ->method('getAllFilesBasedOnQuesry')
             ->willReturn([]);
 
         $commandTester = new CommandTester($command);
@@ -68,5 +68,36 @@ class ListCommandTest extends \PHPUnit_Framework_TestCase
         $command = $application->find('search');
         $commandTester->execute(['command' => $command->getName(), '--query' => 'quer'],['query' => 'query']);
         $this->assertEquals("No matching file/folder found.".PHP_EOL,$commandTester->getDisplay());
+    }
+
+
+    public function testExecute2()
+    {
+
+        $command = $this->getMockBuilder('Abul\GDrive\Command\ListCommand')
+            ->setMethods(['getAllFilesBasedOnQuesry', 'getFileDetails'])
+            ->getMock();
+
+        $file = new \Google_Service_Drive_DriveFile();
+        $file->setId('1');
+        $file->setName('Foo.bar');
+        $file->setSize(1022031);
+        $file->setMimeType('applcation/bar');
+        $file->createdTime = time();
+
+        $command->expects($this->any())
+            ->method('getAllFilesBasedOnQuesry')
+            ->willReturn([$file]);
+        $command->expects($this->any())
+            ->method('getFileDetails')
+            ->willReturn($file);
+
+        $commandTester = new CommandTester($command);
+        $application = new Application();
+        $application->add($command);
+
+        $command = $application->find('search');
+        $commandTester->execute(['command' => $command->getName(), '--query' => 'quer'],['query' => 'query']);
+        $this->assertNotEquals("No matching file/folder found.".PHP_EOL,$commandTester->getDisplay());
     }
 }
