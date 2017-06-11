@@ -18,7 +18,7 @@ class ConfigurationHelper
     /**
      * @var $this
      */
-    private static $instance;
+    protected static $instance;
 
     /**
      * @return $this
