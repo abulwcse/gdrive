@@ -16,6 +16,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ListCommand extends Command
 {
 
+    /**
+     * @var GDriveHelper
+     */
     protected $client;
 
     protected function configure()

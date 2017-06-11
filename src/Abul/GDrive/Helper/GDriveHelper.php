@@ -3,6 +3,8 @@
 namespace Abul\GDrive\Helper;
 
 use Abul\GDrive\Exception\ConfigurationMissingException;
+use Abul\GDrive\Exception\FileNotFoundException;
+use Couchbase\Exception;
 use Google_Client;
 use Google_Service_Drive;
 use Google_Service_Drive_DriveFile;
@@ -109,13 +111,19 @@ class GDriveHelper
     }
 
     /**
-     * Upload a file
+     * upload a file
      *
-     * @param string $file
+     * @param $file
+     *
      * @return Google_Service_Drive_DriveFile
+     *
+     * @throws FileNotFoundException
      */
     public function uploadFile($file)
     {
+        if (!file_exists($file)) {
+            throw new FileNotFoundException("Unable to find the file");
+        }
         $diveFile = new Google_Service_Drive_DriveFile();
         $diveFile->setName(basename($file));
         $diveFile->setMimeType(mime_content_type($file));

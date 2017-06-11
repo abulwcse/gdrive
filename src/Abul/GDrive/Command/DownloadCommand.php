@@ -14,6 +14,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class DownloadCommand extends Command
 {
+    /**
+     * @var GDriveHelper
+     */
+    protected $client;
+
     protected function configure()
     {
         $this->setName('download');
