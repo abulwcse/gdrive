@@ -31,7 +31,7 @@ class AboutCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $gDriveHelper = new GDriveHelper();
+            $gDriveHelper = $this->getGoogleDriveHelper();
             foreach ($gDriveHelper->getAbout() as $key => $value) {
                 $output->writeln("$key : " . $value);
             }
@@ -65,5 +65,13 @@ class AboutCommand extends Command
         } catch (Exception $e) {
             $output->writeln($e->getMessage());
         }
+    }
+
+    /**
+     * @return GDriveHelper
+     */
+    private function getGoogleDriveHelper()
+    {
+        return new GDriveHelper();
     }
 }

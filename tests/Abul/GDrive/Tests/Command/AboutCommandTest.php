@@ -44,7 +44,7 @@ class AboutCommandTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('Authenticate gdrive application',$this->command->getDescription());
     }
 
-    public function testCreateKeyspaceCommand($input = [])
+    public function testCommandExecution($input = [])
     {
         $application = new Application();
         $application->add(new AboutCommand());
@@ -64,11 +64,12 @@ class AboutCommandTest extends PHPUnit_Framework_TestCase
                 $response = 'dummy code';
             }
 
-            if (isset($response) === false) {
+            if (isset($response) !== false) {
                 throw new \RuntimeException('Was asked for input on an unhandled question: '.$text);
+            } else {
+                $output->writeln(print_r($response, true));
+                return $response;
             }
-            $output->writeln(print_r($response, true));
-            return $response;
         };
         $helper = $this->getMock('\Symfony\Component\Console\Helper\QuestionHelper', ['ask']);
         $helper->expects($this->any())
