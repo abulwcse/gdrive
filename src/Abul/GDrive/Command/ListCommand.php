@@ -15,9 +15,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ListCommand extends Command
 {
-    /**
-     *
-     */
+
+    protected $client;
+
     protected function configure()
     {
         $this->setName('search');
@@ -36,18 +36,17 @@ class ListCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $gDriveHelper = new GDriveHelper();
             $query = $input->getOption('query');
             $orderyBy = $input->getOption('orderBy');
             if (empty($query)) {
                 throw new MissingArgumentException("Query string is not specified");
             }
-            $files = $gDriveHelper->getAllFiles($query, $orderyBy)->getFiles();
+            $files = $this->getAllFilesBasedOnQuesry($query, $orderyBy);
             if (count($files) > 0) {
                 $table = new Table($output);
                 $table->setHeaders(['Id', 'File Name', 'Size', 'File Type', 'Created Time']);
                 foreach ($files as $file) {
-                    $file = $gDriveHelper->getFileDetail($file->getId());
+                    $file = $this->getFileDetails($file->getId());
                     $table->addRow([
                         $file->getId(),
                         $file->getName(),
@@ -65,5 +64,43 @@ class ListCommand extends Command
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
         }
+    }
+
+    /**
+     * Get all files that matched the given query
+     *
+     * @param $query
+     * @param $orderBy
+     *
+     * @return \Google_Service_Drive_DriveFile[]
+     */
+    protected function getAllFilesBasedOnQuesry($query, $orderBy)
+    {
+        return $this->getClient()->getAllFiles($query, $orderBy)->getFiles();
+    }
+
+    /**
+     * Get File details based on filed id
+     *
+     * @param $fileId
+     *
+     * @return \Google_Service_Drive_DriveFile
+     */
+    protected function getFileDetails($fileId)
+    {
+        return $this->getClient()->getFileDetail($fileId);
+    }
+
+    /**
+     * Get the google drive helper class instance
+     *
+     * @return GDriveHelper
+     */
+    protected function getClient()
+    {
+        if ($this->client === null) {
+            $this->client = new GDriveHelper();
+        }
+        return $this->client;
     }
 }
