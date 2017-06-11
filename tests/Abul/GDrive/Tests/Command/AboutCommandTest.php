@@ -56,7 +56,7 @@ class AboutCommandTest extends PHPUnit_Framework_TestCase
             $order = $order + 1;
             $text = $question->getQuestion();
             $output->write($text." => ");
-            if (strpos($text, 'Please enter the client Secret') !== false) {
+            if (strpos($text, 'client Secret') !== false) {
                 $response = 'client_secrect';
             } elseif (strpos($text, 'Please enter the client ID') !== false) {
                 $response = 'client_id';
@@ -64,7 +64,7 @@ class AboutCommandTest extends PHPUnit_Framework_TestCase
                 $response = 'dummy code';
             }
 
-            if (isset($response) !== false) {
+            if (isset($response) === false) {
                 throw new \RuntimeException('Was asked for input on an unhandled question: '.$text);
             } else {
                 $output->writeln(print_r($response, true));

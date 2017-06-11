@@ -7,6 +7,12 @@ use Abul\GDrive\Helper\ConfigurationHelper;
 
 class ConfigurationHelperTest extends PHPUnit_Framework_TestCase
 {
+    public function setUp()
+    {
+        if(!file_exists(getenv('HOME') . '/.gdrive')) {
+            mkdir(getenv('HOME') . '/.gdrive');
+        }
+    }
     public function testGetInstance()
     {
         $this->assertInstanceOf('Abul\GDrive\Helper\ConfigurationHelper', ConfigurationHelper::getInstance());
@@ -61,5 +67,18 @@ class ConfigurationHelperTest extends PHPUnit_Framework_TestCase
         ConfigurationHelper::getInstance()->writeConfig(ConfigurationHelper::APP_CONFIG_FILE, ['foo' => 'bar']);
         $this->assertEquals(
             '{"foo":"bar"}', ConfigurationHelper::getInstance()->readConfig(ConfigurationHelper::APP_CONFIG_FILE));
+    }
+
+    public static function tearDownAfterClass()
+    {
+        $appConfigFile = getenv('HOME') . '/.gdrive/app.json';
+        if (file_exists($appConfigFile)) {
+            unlink($appConfigFile);
+        }
+        $accessConfigFile = getenv('HOME') . '/.gdrive/access.json';
+        if (file_exists($accessConfigFile)) {
+            unlink($accessConfigFile);
+        }
+        rmdir(getenv('HOME') . '/.gdrive');
     }
 }
