@@ -32,7 +32,6 @@ class DownloadCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $gDriveHelper = new GDriveHelper();
             $fileId = $input->getArgument('fileId');
             $query = $input->getOption('query');
             if (!empty($query) && !empty($fileId)) {
@@ -40,23 +39,74 @@ class DownloadCommand extends Command
             }
             $fileIds = [];
             if (!empty($query)) {
-                $files = $gDriveHelper->getAllFiles($query)->getFiles();
+                $files = $this->getAllFilesBasedOnQuesry($query);
                 foreach ($files as $file) {
                     $fileIds[$file->getId()] = $file->getName();
                 }
             } else {
-                $file = $gDriveHelper->getFileDetail($fileId);
-                $fileId[$file->getId()] = $file->getName();
+                $file = $this->getFileDetails($fileId);
+                $fileIds[$file->getId()] = $file->getName();
             };
-
-            foreach ($fileIds as $fileId => $fileName) {
-                $gDriveHelper->downloadFileDetail($fileId);
-                $output->writeln("Successfully downloaded file : " . $fileName);
+            if(count($fileIds) > 0) {
+                foreach ($fileIds as $fileId => $fileName) {
+                    $this->downloadFile($fileId);
+                    $output->writeln("Successfully downloaded file : " . $fileName);
+                }
+            } else {
+                $output->writeln("No matching file/folder found.");
             }
         } catch (ConfigurationMissingException $e) {
             $output->writeln($e->getMessage());
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
         }
+    }
+
+
+    /**
+     * Get all files that matched the given query
+     *
+     * @param $query
+     *
+     * @return \Google_Service_Drive_DriveFile[]
+     */
+    protected function getAllFilesBasedOnQuesry($query)
+    {
+        return $this->getClient()->getAllFiles($query)->getFiles();
+    }
+
+    /**
+     * Get File details based on filed id
+     *
+     * @param $fileId
+     *
+     * @return \Google_Service_Drive_DriveFile
+     */
+    protected function getFileDetails($fileId)
+    {
+        return $this->getClient()->getFileDetail($fileId);
+    }
+
+    /**
+     * Get the google drive helper class instance
+     *
+     * @return GDriveHelper
+     */
+    protected function getClient()
+    {
+        if ($this->client === null) {
+            $this->client = new GDriveHelper();
+        }
+        return $this->client;
+    }
+
+    /**
+     * Download the file with given id
+     *
+     * @param $fileId
+     */
+    protected function downloadFile($fileId)
+    {
+        $this->getClient()->downloadFileDetail($fileId);
     }
 }
