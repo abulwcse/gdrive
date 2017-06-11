@@ -67,6 +67,4 @@ class UploadCommandTest extends PHPUnit_Framework_TestCase
         $commandTester->execute(['command' => $command->getName(), 'file' => 'foo.json']);
         $this->assertEquals('File upload successful.'.PHP_EOL,$commandTester->getDisplay());
     }
-
-
 }

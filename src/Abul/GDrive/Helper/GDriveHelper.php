@@ -4,7 +4,6 @@ namespace Abul\GDrive\Helper;
 
 use Abul\GDrive\Exception\ConfigurationMissingException;
 use Abul\GDrive\Exception\FileNotFoundException;
-use Couchbase\Exception;
 use Google_Client;
 use Google_Service_Drive;
 use Google_Service_Drive_DriveFile;
