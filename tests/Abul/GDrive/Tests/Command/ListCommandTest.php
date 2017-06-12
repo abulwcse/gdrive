@@ -73,7 +73,6 @@ class ListCommandTest extends \PHPUnit_Framework_TestCase
 
     public function testExecute2()
     {
-
         $command = $this->getMockBuilder('Abul\GDrive\Command\ListCommand')
             ->setMethods(['getAllFilesBasedOnQuesry', 'getFileDetails'])
             ->getMock();

@@ -36,10 +36,26 @@ class GDriveHelper
         $this->_client->setRedirectUri('urn:ietf:wg:oauth:2.0:oob');
         $this->_client->setAccessType("offline");
         $this->_client->addScope(Google_Service_Drive::DRIVE);
-        $this->_configHelper = ConfigurationHelper::getInstance();
+        $this->setConfigHelper(ConfigurationHelper::getInstance());
         if ($initService) {
             $this->initService();
         }
+    }
+
+    /**
+     * @param ConfigurationHelper $configHelper
+     */
+    public function setConfigHelper($configHelper)
+    {
+        $this->_configHelper = $configHelper;
+    }
+
+    /**
+     * @return  ConfigurationHelper
+     */
+    public function getConfigHelper()
+    {
+        return $this->_configHelper;
     }
 
     /**
@@ -49,11 +65,16 @@ class GDriveHelper
     {
         $this->loadAppConfig();
         $this->loadAccessConfig();
+        $this->refreshAccessTokenIfNeeded();
+        $this->_service = new Google_Service_Drive($this->_client);
+    }
+
+    public function refreshAccessTokenIfNeeded()
+    {
         if ($this->_client->isAccessTokenExpired()) {
             $config = $this->_client->fetchAccessTokenWithRefreshToken();
             $this->_configHelper->writeConfig(ConfigurationHelper::ACCESS_CONFIG_FILE, $config);
         }
-        $this->_service = new Google_Service_Drive($this->_client);
     }
 
     /**
