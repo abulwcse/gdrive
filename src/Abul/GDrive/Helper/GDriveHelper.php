@@ -193,10 +193,11 @@ class GDriveHelper
      */
     public function getAllFiles($query, $orderBy = null)
     {
-        $searchParms['q'] = $query;
+        $searchParms = [];
         if (!empty($orderBy)) {
             $searchParms['orderBy'] = $orderBy;
         }
+        $searchParms['q'] = $query;
         return $this->_service->files->listFiles($searchParms);
     }
 }
